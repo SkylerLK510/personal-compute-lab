@@ -38,7 +38,18 @@ python3 -c "from worker import request; print(request('http://127.0.0.1:8765', '
 python3 -c "from worker import request; print(request('http://127.0.0.1:8765', '/status'))"
 ```
 
-On Windows, use the appropriate Python launcher (`python` or `py -3`) instead of `python3`. Windows execution has not yet been validated.
+On Windows, use the appropriate Python launcher (`python` or `py -3`) instead of `python3`. Coordinator tests pass on GitHub-hosted Windows, Linux, and macOS runners; the intended desktop still needs validation.
+
+## Hardware diagnostics
+
+```sh
+python3 tools/hardware_probe.py --pretty
+python3 tools/hardware_probe.py --all --pretty
+```
+
+The default command reports basic hardware and tool availability without launching external commands. `--all` opts into fixed, read-only NVIDIA, WSL, and macOS queries with per-command timeouts. Individual flags are `--nvidia`, `--wsl`, and `--macos`. Missing tools appear in the JSON report; nothing is installed or uploaded. Review the output before sharing it.
+
+These are inventory facts, not workload benchmarks. NVIDIA's reported CUDA version describes driver support, not an installed toolkit. Thunderbolt speed descriptions are not measured throughput between the two computers. Actual NVIDIA and WSL queries still need validation on the desktop.
 
 ## Tests
 
