@@ -233,8 +233,9 @@ def probe_nvidia(timeout_s=DEFAULT_TIMEOUT_S, run=run_bounded):
     section['gpus'] = parse_nvidia_csv(result['stdout'], fields)
     # The plain banner is the only place the driver's CUDA version appears. It also
     # lists running process names, so keep the one regex match and drop the rest.
+    # Newer drivers (seen on 616.56) label it "CUDA UMD Version:" instead.
     banner = run(['nvidia-smi'], timeout_s)
-    match = re.search(r'CUDA Version:\s*([0-9.]+)', banner.get('stdout', ''))
+    match = re.search(r'CUDA(?: UMD)? Version:\s*([0-9.]+)', banner.get('stdout', ''))
     section['cuda_version'] = match.group(1) if match else None
     return section
 
