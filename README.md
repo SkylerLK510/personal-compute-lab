@@ -38,7 +38,7 @@ python3 -c "from worker import request; print(request('http://127.0.0.1:8765', '
 python3 -c "from worker import request; print(request('http://127.0.0.1:8765', '/status'))"
 ```
 
-On Windows, use the appropriate Python launcher (`python` or `py -3`) instead of `python3`. Coordinator tests pass on GitHub-hosted Windows, Linux, and macOS runners; the intended desktop still needs validation.
+On Windows, use the appropriate Python launcher (`python` or `py -3`) instead of `python3`. Coordinator tests pass on GitHub-hosted Windows, Linux, and macOS runners, and on the intended desktop under WSL2. Native Windows on that desktop has not been tested.
 
 ## Hardware diagnostics
 
@@ -49,7 +49,7 @@ python3 tools/hardware_probe.py --all --pretty
 
 The default command reports basic hardware and tool availability without launching external commands. `--all` opts into fixed, read-only NVIDIA, WSL, and macOS queries with per-command timeouts. Individual flags are `--nvidia`, `--wsl`, and `--macos`. Missing tools appear in the JSON report; nothing is installed or uploaded. Review the output before sharing it.
 
-These are inventory facts, not workload benchmarks. NVIDIA's reported CUDA version describes driver support, not an installed toolkit. Thunderbolt speed descriptions are not measured throughput between the two computers. Actual NVIDIA and WSL queries still need validation on the desktop.
+These are inventory facts, not workload benchmarks. NVIDIA's reported CUDA version describes driver support, not an installed toolkit. Thunderbolt speed descriptions are not measured throughput between the two computers. The NVIDIA and macOS queries have been run on the real desktop (inside WSL2) and Mac. The `--wsl` section only runs from native Windows and still needs validation there.
 
 ## Tests
 
@@ -74,6 +74,8 @@ The current SQLite result transaction is **not a model checkpoint implementation
 3. Add a native Mac evaluation worker and a desktop training worker with explicit artifact compatibility checks.
 4. Compare independent jobs against desktop-only GPU and CPU-offload baselines.
 5. Investigate distributed inference and, separately, model-partitioned training using public implementations and papers.
+
+Experiments 1 and 2 have been run on the real desktop and Mac; results, the measured link, and the SSH reverse-tunnel pattern that keeps the coordinator on loopback are in [docs/two-machine-validation.md](docs/two-machine-validation.md).
 
 A coordinator running on the desktop is the intended deployment. Developing the portable coordinator on a Mac does not require relocating the development workstation.
 
