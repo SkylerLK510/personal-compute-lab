@@ -4,6 +4,7 @@ import contextlib
 import hashlib
 import json
 import sqlite3
+from socketserver import TCPServer
 import time
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -96,6 +97,12 @@ class Queue:
 
 
 def serve(queue, port=8765):
+    class LocalServer(ThreadingHTTPServer):
+        def server_bind(self):
+            # This numeric loopback service does not need reverse DNS at startup.
+            TCPServer.server_bind(self)
+            self.server_name, self.server_port = self.server_address[:2]
+
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass
@@ -122,7 +129,7 @@ def serve(queue, port=8765):
             self.send_header('Content-Length', str(len(data)))
             self.end_headers()
             self.wfile.write(data)
-    return ThreadingHTTPServer(('127.0.0.1', port), Handler)
+    return LocalServer(('127.0.0.1', port), Handler)
 
 
 if __name__ == '__main__':

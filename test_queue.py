@@ -2,10 +2,20 @@ import concurrent.futures
 import tempfile
 import unittest
 from pathlib import Path
-from coordinator import Queue
+from unittest.mock import patch
+from coordinator import Queue, serve
 
 
 class QueueTests(unittest.TestCase):
+    def test_local_server_does_not_require_dns(self):
+        with patch('socket.getfqdn', side_effect=OSError('DNS unavailable')):
+            server = serve(None, port=0)
+            try:
+                self.assertEqual(server.server_name, '127.0.0.1')
+                self.assertGreater(server.server_port, 0)
+            finally:
+                server.server_close()
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
