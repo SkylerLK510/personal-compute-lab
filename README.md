@@ -75,6 +75,8 @@ The current SQLite result transaction is **not a model checkpoint implementation
 4. Compare independent jobs against desktop-only GPU and CPU-offload baselines.
 5. Investigate distributed inference and, separately, model-partitioned training using public implementations and papers.
 
+Experiments 1 and 2 have been run on the real desktop and Mac; results, the measured link, and the SSH reverse-tunnel pattern that keeps the coordinator on loopback are in [docs/two-machine-validation.md](docs/two-machine-validation.md).
+
 A coordinator running on the desktop is the intended deployment. Developing the portable coordinator on a Mac does not require relocating the development workstation.
 
 ## Public research references
