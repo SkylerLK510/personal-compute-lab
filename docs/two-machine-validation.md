@@ -48,15 +48,19 @@ inference (experiment 5). The upgrade path is a 2.5/10 GbE NIC in the desktop.
 
 ## Cross-machine run without exposing the coordinator
 
-The coordinator has no authentication or TLS and must stay on loopback. SSH provides both,
-so the first cross-machine run used a reverse tunnel opened **from the desktop**:
+The coordinator has no authentication or TLS and must stay on loopback. The first
+cross-machine run therefore wrapped its plain HTTP in an SSH reverse tunnel opened **from
+the desktop**. SSH authenticates the peer and encrypts the transport; the coordinator
+itself still has neither, so anything that can reach loopback on either machine can still
+talk to it.
 
 ```sh
 # desktop, terminal 1: coordinator on 127.0.0.1 only
 python3 coordinator.py
 
-# desktop, terminal 2: run the worker on the Mac; its 127.0.0.1:8765 is tunnelled back
-ssh -R 8765:127.0.0.1:8765 <mac-user>@<mac-ip> \
+# desktop, terminal 2: run the worker on the Mac; its 127.0.0.1:8765 is tunnelled back.
+# ExitOnForwardFailure stops the worker from starting if the Mac's port is already taken.
+ssh -o ExitOnForwardFailure=yes -R 8765:127.0.0.1:8765 <mac-user>@<mac-ip> \
   'cd <repo-on-mac> && python3.12 worker.py --url http://127.0.0.1:8765 --once'
 ```
 
@@ -70,6 +74,10 @@ firewall rule is scoped to the cable's adapter and subnet, so it is not reachabl
 Wi-Fi. The Mac still uses the macOS Remote Login defaults.
 
 ## Follow-ups this exposed
+
+- Everything above was set up by hand. The next goal is making it reproducible for anyone
+  with a Mac and a PC: a step-by-step setup guide (cable, addresses, SSH both ways, Python
+  via `uv`) and a single command that opens the tunnel and starts the remote worker.
 
 - Workers identify themselves with a random UUID, so `/status` cannot show which machine
   ran a job. A worker label (not the host name, to keep reports shareable) would fix that.
