@@ -154,6 +154,13 @@ class NvidiaTests(unittest.TestCase):
             'driver_version': '581.29', 'compute_cap': '12.0'}]})
         self.assertNotIn('secret-project', json.dumps(section))
 
+    def test_parses_cuda_version_from_newer_umd_banner(self):
+        banner = '| NVIDIA-SMI 615.65.06              KMD Version: 616.56        CUDA UMD Version: 13.4     |\n'
+        run = fake_run([(('nvidia-smi', '--query-gpu=name,memory.total,driver_version,compute_cap'),
+                         {'status': 'ok', 'stdout': self.CSV}),
+                        (('nvidia-smi',), {'status': 'ok', 'stdout': banner})])
+        self.assertEqual(hp.probe_nvidia(run=run)['cuda_version'], '13.4')
+
     def test_query_never_asks_for_identifying_fields(self):
         run = fake_run([])
         hp.probe_nvidia(run=run)
