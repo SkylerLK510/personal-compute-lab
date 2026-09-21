@@ -75,4 +75,3 @@ These are references, not implemented features or performance claims:
 - [SWARM Parallelism](https://arxiv.org/abs/2301.11913)
 - [Streaming DiLoCo](https://arxiv.org/abs/2501.18512)
 - [FedEx-LoRA](https://arxiv.org/abs/2410.09432)
-
